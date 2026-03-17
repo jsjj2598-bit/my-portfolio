@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 interface MediaItem {
   id: number;
@@ -10,6 +10,8 @@ interface MediaItem {
   createdAt: string;
 }
 
+const getCurrentTime = () => Date.now();
+
 const AdminDashboard: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -19,25 +21,73 @@ const AdminDashboard: React.FC = () => {
     type: 'image',
     category: '摄影'
   });
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockoutTime, setLockoutTime] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(0);
 
   const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
+  const MAX_LOGIN_ATTEMPTS = 5;
+  const LOCKOUT_DURATION = 60000;
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      loadMediaItems();
-    } else {
-      alert('密码错误！');
+  useEffect(() => {
+    let interval: number | null = null;
+    if (isLocked) {
+      const updateRemaining = () => {
+        const remaining = Math.max(0, Math.ceil((lockoutTime - getCurrentTime()) / 1000));
+        setRemainingTime(remaining);
+        if (remaining <= 0) {
+          setIsLocked(false);
+          setLoginAttempts(0);
+        }
+      };
+      updateRemaining();
+      interval = window.setInterval(updateRemaining, 1000);
     }
-  };
+    return () => {
+      if (interval !== null) {
+        clearInterval(interval);
+      }
+    };
+  }, [isLocked, lockoutTime]);
 
-  const loadMediaItems = () => {
+  const loadMediaItems = useCallback(() => {
     const saved = localStorage.getItem('mediaItems');
     if (saved) {
       setMediaItems(JSON.parse(saved));
     }
-  };
+  }, []);
+
+  const handleLogin = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (isLocked) {
+      alert(`登录已锁定，请等待 ${remainingTime} 秒后重试`);
+      return;
+    }
+
+    if (password === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      setLoginAttempts(0);
+      loadMediaItems();
+    } else {
+      const newAttempts = loginAttempts + 1;
+      setLoginAttempts(newAttempts);
+      
+      if (newAttempts >= MAX_LOGIN_ATTEMPTS) {
+        setIsLocked(true);
+        setLockoutTime(getCurrentTime() + LOCKOUT_DURATION);
+        alert(`登录失败次数过多，已锁定 ${LOCKOUT_DURATION / 1000} 秒`);
+        
+        setTimeout(() => {
+          setIsLocked(false);
+          setLoginAttempts(0);
+        }, LOCKOUT_DURATION);
+      } else {
+        alert(`密码错误！还剩 ${MAX_LOGIN_ATTEMPTS - newAttempts} 次尝试机会`);
+      }
+    }
+  }, [password, isLocked, remainingTime, loginAttempts, ADMIN_PASSWORD, loadMediaItems]);
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
