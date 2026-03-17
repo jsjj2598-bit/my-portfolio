@@ -46,17 +46,29 @@ const Photography: React.FC = () => {
     setSelectedPhoto(photos[(currentIndex - 1 + photos.length) % photos.length]);
   };
 
+  const photoColors = [
+    'from-orange-500 via-amber-500 to-yellow-500',
+    'from-cyan-500 via-blue-500 to-indigo-500',
+    'from-pink-500 via-rose-500 to-red-500',
+    'from-emerald-500 via-teal-500 to-cyan-500',
+    'from-violet-500 via-purple-500 to-fuchsia-500',
+    'from-lime-500 via-green-500 to-emerald-500',
+  ];
+
   return (
-    <section id="photography" className="py-24 lg:py-32 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-900/5 to-transparent"></div>
+    <section id="photography" className="py-24 lg:py-32 relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gradient-to-r from-orange-600/20 via-amber-600/20 to-yellow-600/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-cyan-600/20 via-blue-600/20 to-indigo-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+      </div>
       
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
         <div className="text-center mb-16 reveal">
-          <span className="text-indigo-400 text-sm font-medium tracking-widest uppercase">摄影作品</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400 text-sm font-medium tracking-widest uppercase">摄影作品</span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-4 mb-6">
-            光影 <span className="gradient-text">艺术画廊</span>
+            光影 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 animate-pulse">艺术画廊</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
             用镜头捕捉世界的美好，每一张照片都是一个故事
           </p>
         </div>
@@ -69,27 +81,29 @@ const Photography: React.FC = () => {
               style={{ animationDelay: `${index * 0.1}s` }}
               onClick={() => openLightbox(photo, index)}
             >
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer glass-effect">
-                <img 
-                  src={photo.image} 
-                  alt={photo.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.nextElementSibling?.classList.remove('hidden');
-                  }}
-                />
-                <div className="hidden absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
-                  <span className="text-6xl">📷</span>
-                </div>
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                    <span className="text-indigo-400 text-sm font-medium tracking-wider uppercase mb-2 block">
-                      {photo.category}
-                    </span>
-                    <h3 className="text-xl font-bold text-white">{photo.title}</h3>
+              <div className={`bg-gradient-to-br ${photoColors[index % photoColors.length]} p-1 rounded-2xl overflow-hidden cursor-pointer card-hover`}>
+                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-900">
+                  <img 
+                    src={photo.image} 
+                    alt={photo.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      target.nextElementSibling?.classList.remove('hidden');
+                    }}
+                  />
+                  <div className="hidden absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+                    <span className="text-6xl">📷</span>
+                  </div>
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                      <span className={`text-transparent bg-clip-text bg-gradient-to-r ${photoColors[index % photoColors.length]} text-sm font-medium tracking-wider uppercase mb-2 block`}>
+                        {photo.category}
+                      </span>
+                      <h3 className="text-xl font-bold text-white drop-shadow-lg">{photo.title}</h3>
+                    </div>
                   </div>
                 </div>
               </div>
