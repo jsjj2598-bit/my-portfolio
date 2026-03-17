@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
 
-import video1 from '../assets/09ce04b1f9c1f90dfbfc0700ad960907.mp4';
-import video2 from '../assets/754811a50cc8a6fae65b0e9b7ee0253f.mp4';
-import video3 from '../assets/754811a50cc8a6fae65b0e9b7ee0253f(1).mp4';
-import video4 from '../assets/78df6878971f733d6f22fdee55f2e0a7.mp4';
-import video5 from '../assets/a47cff61179bab84f07564bae0520eb8.mp4';
-import video6 from '../assets/ccd0fab0ad080c8f4ca9722131399338.mp4';
-import video7 from '../assets/cd601e9a73f986f7c6e226f661662dfe.mp4';
-import video8 from '../assets/ce5f6ea832fe4c28d94ec940ce28549c.mp4';
-import video9 from '../assets/df68fb1817d6768067069ec73e1934fd.mp4';
-
 interface VideoItem {
   id: number;
   title: string;
@@ -26,84 +16,84 @@ const Video: React.FC = () => {
   const videos: VideoItem[] = [
     {
       id: 1,
-      title: 'AI 科幻世界',
-      category: '科幻',
-      description: '未来科技与人工智能的完美融合，呈现令人震撼的视觉效果。',
+      title: '小米影像作品 1',
+      category: 'AI视频',
+      description: '用 AI 技术创造的精彩影像，展现无限创意。',
       color: 'from-indigo-600 via-purple-600 to-pink-600',
-      emoji: '🌃',
-      videoSrc: video1
+      emoji: '🎬',
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773731016/%E5%B0%8F%E4%BA%91%E9%9B%80_1772815120360_0_m_wfuebj.mp4'
     },
     {
       id: 2,
-      title: '梦幻宇宙',
-      category: '奇幻',
-      description: '穿越星云与银河，探索宇宙深处的神秘与美丽。',
+      title: '小米影像作品 2',
+      category: 'AI视频',
+      description: '探索 AI 创意的无限可能，每一个画面都是想象力的延伸。',
       color: 'from-blue-600 via-indigo-600 to-purple-600',
       emoji: '🌌',
-      videoSrc: video2
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773731014/%E5%B0%8F%E4%BA%91%E9%9B%80_1772612068608_0_m_regmvd.mp4'
     },
     {
       id: 3,
-      title: '东方美学',
-      category: '国风',
-      description: '融合传统东方美学与现代 AI 技术，创造独特的诗意画面。',
+      title: '小米影像作品 3',
+      category: 'AI视频',
+      description: '用人工智能技术打造的独特视觉体验。',
       color: 'from-emerald-600 via-teal-600 to-cyan-600',
       emoji: '🏯',
-      videoSrc: video3
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773731014/%E5%B0%8F%E4%BA%91%E9%9B%80_1773304008397_0_m_auraed.mp4'
     },
     {
       id: 4,
-      title: '数字艺术',
-      category: '艺术',
-      description: '色彩与形状的碰撞，探索抽象艺术的无限可能。',
+      title: '小米影像作品 4',
+      category: 'AI视频',
+      description: 'AI 与艺术的完美结合，创造令人惊叹的视觉效果。',
       color: 'from-rose-600 via-pink-600 to-fuchsia-600',
       emoji: '🎨',
-      videoSrc: video4
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773731011/%E5%B0%8F%E4%BA%91%E9%9B%80_1773304000591_0_m_fy2wh1.mp4'
     },
     {
       id: 5,
-      title: '赛博朋克',
-      category: '科幻',
-      description: '霓虹灯光与未来都市的完美结合，展现赛博朋克美学。',
+      title: '小米影像作品 5',
+      category: 'AI视频',
+      description: '用 AI 技术讲述精彩故事，每一帧都是艺术品。',
       color: 'from-cyan-600 via-blue-600 to-indigo-600',
       emoji: '⚡',
-      videoSrc: video5
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773731007/%E5%B0%8F%E4%BA%91%E9%9B%80_1772814569791_0_m_ziyiod.mp4'
     },
     {
       id: 6,
-      title: '自然之美',
-      category: '自然',
-      description: 'AI 模拟的自然生态系统，展现生命的律动。',
+      title: '创意视频 1',
+      category: 'AI视频',
+      description: '独特的创意视角，展现不一样的世界。',
       color: 'from-green-700 via-emerald-600 to-teal-500',
       emoji: '🌿',
-      videoSrc: video6
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773730810/video_20260310_174352_edit_frwaiw.mp4'
     },
     {
       id: 7,
-      title: '虚拟世界',
-      category: '游戏',
-      description: '探索虚拟游戏世界的无限可能与奇妙冒险。',
+      title: '小米影像作品 6',
+      category: 'AI视频',
+      description: '用镜头和 AI 捕捉生活中的美好瞬间。',
       color: 'from-violet-600 via-purple-600 to-fuchsia-600',
       emoji: '🎮',
-      videoSrc: video7
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773730815/%E5%B0%8F%E4%BA%91%E9%9B%80_1772272611317_0_m_ygp4ou.mp4'
     },
     {
       id: 8,
-      title: '像素艺术',
-      category: '艺术',
-      description: '怀旧像素风格的动画短片，重温经典的快乐时光。',
+      title: '小米影像作品 7',
+      category: 'AI视频',
+      description: '探索 AI 创作的无限边界，让想象力自由飞翔。',
       color: 'from-green-600 via-lime-600 to-yellow-600',
       emoji: '🎲',
-      videoSrc: video8
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773730803/%E5%B0%8F%E4%BA%91%E9%9B%80_1772263833021_0_m_zkzoux.mp4'
     },
     {
       id: 9,
-      title: '奇幻冒险',
-      category: '奇幻',
-      description: '踏上神秘的冒险之旅，探索未知的奇幻世界。',
+      title: '创意视频 2',
+      category: 'AI视频',
+      description: '用 AI 技术创造独特的视觉体验。',
       color: 'from-amber-600 via-orange-600 to-red-600',
       emoji: '🌟',
-      videoSrc: video9
+      videoSrc: 'https://res.cloudinary.com/dgslwbfw2/video/upload/v1773730800/video_20260228_184806_edit_mitmon.mp4'
     },
   ];
 
