@@ -22,6 +22,9 @@ interface GitHubUser {
 const GITHUB_CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID || '';
 const GITHUB_REDIRECT_URI = import.meta.env.VITE_GITHUB_REDIRECT_URI || window.location.origin;
 
+console.log('GITHUB_CLIENT_ID:', GITHUB_CLIENT_ID);
+console.log('GITHUB_REDIRECT_URI:', GITHUB_REDIRECT_URI);
+
 const Guestbook: React.FC = () => {
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [user, setUser] = useState<GitHubUser | null>(null);
@@ -56,7 +59,17 @@ const Guestbook: React.FC = () => {
   }, [loadComments]);
 
   const handleGitHubLogin = () => {
-    const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_REDIRECT_URI}&scope=read:user`;
+    console.log('handleGitHubLogin clicked');
+    console.log('GITHUB_CLIENT_ID:', GITHUB_CLIENT_ID);
+    console.log('GITHUB_REDIRECT_URI:', GITHUB_REDIRECT_URI);
+    
+    if (!GITHUB_CLIENT_ID) {
+      alert('GitHub Client ID 未配置，请先在环境变量中配置 VITE_GITHUB_CLIENT_ID');
+      return;
+    }
+    
+    const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(GITHUB_REDIRECT_URI)}&scope=read:user`;
+    console.log('Redirecting to:', authUrl);
     window.location.href = authUrl;
   };
 
