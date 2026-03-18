@@ -1,6 +1,8 @@
 [build]
 buildCommand = "cd backend && go build -o server cmd/server/main.go"
-disableNodeDetection = true
 
 [providers]
 providers = ["go"]
+
+[ignorePatterns]
+patterns = ["package.json", "package-lock.json"]
