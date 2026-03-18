@@ -9,6 +9,7 @@ import WorksUpload from './components/WorksUpload';
 import AllWorks from './components/AllWorks';
 import Footer from './components/Footer';
 import Guestbook from './components/Guestbook';
+import AuthModal from './components/AuthModal';
 import { api } from './services/api';
 
 interface MediaItem {
@@ -21,9 +22,19 @@ interface MediaItem {
   createdAt: string;
 }
 
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  avatar?: string;
+}
+
 const App: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [showAllWorks, setShowAllWorks] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [userToken, setUserToken] = useState<string | null>(null);
 
   useEffect(() => {
     const loadItems = async () => {
@@ -33,6 +44,13 @@ const App: React.FC = () => {
     loadItems();
     
     api.addLog({ type: 'visit' }).catch(() => {});
+    
+    const savedToken = localStorage.getItem('user_token');
+    const savedUser = localStorage.getItem('user_info');
+    if (savedToken && savedUser) {
+      setUserToken(savedToken);
+      setCurrentUser(JSON.parse(savedUser));
+    }
   }, []);
 
   useEffect(() => {
@@ -58,7 +76,7 @@ const App: React.FC = () => {
     }, 100);
     
     return () => window.removeEventListener('scroll', revealOnScroll);
-  }, [mediaItems, showAllWorks]);
+  }, [mediaItems, showAllWorks, currentUser]);
 
   const addMediaItem = async (item: MediaItem) => {
     await api.addMediaItem(item);
@@ -86,6 +104,25 @@ const App: React.FC = () => {
       await api.addMediaItem(item);
     }
     setMediaItems(prev => [...prev, ...items]);
+  };
+
+  const handleLoginSuccess = (user: User, token: string) => {
+    setCurrentUser(user);
+    setUserToken(token);
+    setShowAuthModal(false);
+    
+    api.addLog({
+      type: 'login',
+      userId: user.id,
+      userName: user.name,
+    }).catch(() => {});
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user_token');
+    localStorage.removeItem('user_info');
+    setCurrentUser(null);
+    setUserToken(null);
   };
 
   if (showAllWorks) {
@@ -123,11 +160,22 @@ const App: React.FC = () => {
           <Video />
           <Photography />
           <Hobbies />
-          <Guestbook />
+          <Guestbook 
+            currentUser={currentUser}
+            userToken={userToken}
+            onLoginClick={() => setShowAuthModal(true)}
+            onLogout={handleLogout}
+          />
           <WorksUpload onUpload={addMediaItem} mediaCount={mediaItems.length} mediaItems={mediaItems} onExport={exportMediaItems} onImport={importMediaItems} />
         </main>
         <Footer />
       </div>
+
+      <AuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 };

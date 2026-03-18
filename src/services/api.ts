@@ -45,25 +45,13 @@ interface ActivityLog {
   createdAt: string;
 }
 
-interface GitHubUser {
-  login: string;
-  id: number;
-  avatar_url: string;
-  name: string;
-}
-
 interface User {
   id: string;
-  githubId: number;
-  login: string;
+  email: string;
   name: string;
-  avatarUrl: string;
-  email?: string;
-  bio?: string;
-  website?: string;
-  location?: string;
+  avatar?: string;
   createdAt: string;
-  lastLoginAt: string;
+  lastLoginAt?: string;
   isAdmin: boolean;
 }
 
@@ -188,25 +176,29 @@ export const api = {
     return await response.json();
   },
 
-  async getGitHubUser(accessToken: string): Promise<GitHubUser> {
-    const response = await fetch('https://api.github.com/user', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
+  async register(email: string, password: string, name: string): Promise<{ user: User }> {
+    const response = await fetch(`${API_BASE}/auth`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'register', email, password, name }),
     });
-    if (!response.ok) throw new Error('Failed to get user');
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || '注册失败');
+    }
     return await response.json();
   },
 
-  async githubOAuthCallback(code: string): Promise<{ access_token: string; user: GitHubUser }> {
-    const response = await fetch(`${API_BASE}/auth/github/callback`, {
+  async login(email: string, password: string): Promise<{ user: User }> {
+    const response = await fetch(`${API_BASE}/auth`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ code }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login', email, password }),
     });
-    if (!response.ok) throw new Error('GitHub OAuth failed');
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || '登录失败');
+    }
     return await response.json();
   },
 

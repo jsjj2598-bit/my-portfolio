@@ -3,16 +3,12 @@ import { createClient } from '@vercel/kv';
 
 interface User {
   id: string;
-  githubId: number;
-  login: string;
+  email: string;
+  password: string;
   name: string;
-  avatarUrl: string;
-  email?: string;
-  bio?: string;
-  website?: string;
-  location?: string;
+  avatar?: string;
   createdAt: string;
-  lastLoginAt: string;
+  lastLoginAt?: string;
   isAdmin: boolean;
 }
 
@@ -40,7 +36,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const users = await kv.get<User[]>('users') || [];
-      res.status(200).json(users);
+      // 返回用户列表（不包含密码）
+      const safeUsers = users.map(u => ({
+        id: u.id,
+        email: u.email,
+        name: u.name,
+        avatar: u.avatar,
+        createdAt: u.createdAt,
+        lastLoginAt: u.lastLoginAt,
+        isAdmin: u.isAdmin,
+      }));
+      res.status(200).json(safeUsers);
       return;
     }
 
