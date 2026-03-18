@@ -52,6 +52,21 @@ interface GitHubUser {
   name: string;
 }
 
+interface User {
+  id: string;
+  githubId: number;
+  login: string;
+  name: string;
+  avatarUrl: string;
+  email?: string;
+  bio?: string;
+  website?: string;
+  location?: string;
+  createdAt: string;
+  lastLoginAt: string;
+  isAdmin: boolean;
+}
+
 const API_BASE = '/api';
 
 export const api = {
@@ -193,5 +208,39 @@ export const api = {
     });
     if (!response.ok) throw new Error('GitHub OAuth failed');
     return await response.json();
+  },
+
+  async getUsers(token: string): Promise<User[]> {
+    const response = await fetch(`${API_BASE}/users`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw new Error('Failed to get users');
+    return await response.json();
+  },
+
+  async updateUserAdmin(id: string, isAdmin: boolean, token: string): Promise<void> {
+    const response = await fetch(`${API_BASE}/users`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id, isAdmin }),
+    });
+    if (!response.ok) throw new Error('Failed to update user');
+  },
+
+  async deleteUser(id: string, token: string): Promise<void> {
+    const response = await fetch(`${API_BASE}/users`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ id }),
+    });
+    if (!response.ok) throw new Error('Failed to delete user');
   },
 };

@@ -25,11 +25,27 @@ interface ActivityLog {
   createdAt: string;
 }
 
+interface User {
+  id: string;
+  githubId: number;
+  login: string;
+  name: string;
+  avatarUrl: string;
+  email?: string;
+  bio?: string;
+  website?: string;
+  location?: string;
+  createdAt: string;
+  lastLoginAt: string;
+  isAdmin: boolean;
+}
+
 const getCurrentTime = () => Date.now();
 
 const AdminDashboard: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -89,6 +105,11 @@ const AdminDashboard: React.FC = () => {
     setActivityLogs(logs);
   }, [ADMIN_PASSWORD]);
 
+  const loadUsers = useCallback(async () => {
+    const users = await api.getUsers(ADMIN_PASSWORD);
+    setUsers(users);
+  }, [ADMIN_PASSWORD]);
+
   const handleLogin = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     
@@ -102,6 +123,7 @@ const AdminDashboard: React.FC = () => {
       setLoginAttempts(0);
       loadMediaItems();
       loadActivityLogs();
+      loadUsers();
     } else {
       const newAttempts = loginAttempts + 1;
       setLoginAttempts(newAttempts);
@@ -119,7 +141,7 @@ const AdminDashboard: React.FC = () => {
         alert(`密码错误！还剩 ${MAX_LOGIN_ATTEMPTS - newAttempts} 次尝试机会`);
       }
     }
-  }, [password, isLocked, remainingTime, loginAttempts, ADMIN_PASSWORD, loadMediaItems]);
+  }, [password, isLocked, remainingTime, loginAttempts, ADMIN_PASSWORD, loadMediaItems, loadActivityLogs, loadUsers]);
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,6 +187,32 @@ const AdminDashboard: React.FC = () => {
         await api.deleteMediaItem(item.id);
       }
       setMediaItems([]);
+    }
+  };
+
+  const handleToggleAdmin = async (user: User) => {
+    if (!confirm(`确定要${user.isAdmin ? '取消' : '设置'} ${user.name} 的管理员权限吗？`)) return;
+    try {
+      await api.updateUserAdmin(user.id, !user.isAdmin, ADMIN_PASSWORD);
+      const updatedUsers = users.map(u => 
+        u.id === user.id ? { ...u, isAdmin: !user.isAdmin } : u
+      );
+      setUsers(updatedUsers);
+    } catch (error) {
+      console.error('Error updating user:', error);
+      alert('操作失败');
+    }
+  };
+
+  const handleDeleteUser = async (user: User) => {
+    if (!confirm(`确定要删除用户 ${user.name} 吗？此操作不可恢复！`)) return;
+    try {
+      await api.deleteUser(user.id, ADMIN_PASSWORD);
+      const updatedUsers = users.filter(u => u.id !== user.id);
+      setUsers(updatedUsers);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      alert('删除失败');
     }
   };
 
@@ -414,6 +462,93 @@ const AdminDashboard: React.FC = () => {
                       </td>
                       <td className="py-3 px-4 text-gray-500 text-sm font-mono">
                         {log.ip || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
+        <div className="glass-effect rounded-3xl p-6 mb-8">
+          <h2 className="text-2xl font-bold text-white mb-4">
+            👥 用户管理
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-4 glass-effect rounded-2xl">
+              <div className="text-3xl font-bold text-cyan-400">{users.length}</div>
+              <div className="text-gray-400">总用户数</div>
+            </div>
+            <div className="text-center p-4 glass-effect rounded-2xl">
+              <div className="text-3xl font-bold text-amber-400">
+                {users.filter(u => u.isAdmin).length}
+              </div>
+              <div className="text-gray-400">管理员</div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            {users.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">
+                暂无用户
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">用户</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">GitHub</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">注册时间</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">最后登录</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">角色</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user.id} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={user.avatarUrl}
+                            alt={user.name}
+                            className="w-10 h-10 rounded-full"
+                          />
+                          <span className="text-white font-medium">{user.name}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-gray-400">@{user.login}</td>
+                      <td className="py-3 px-4 text-gray-400 text-sm">
+                        {new Date(user.createdAt).toLocaleString('zh-CN')}
+                      </td>
+                      <td className="py-3 px-4 text-gray-400 text-sm">
+                        {new Date(user.lastLoginAt).toLocaleString('zh-CN')}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          user.isAdmin 
+                            ? 'bg-amber-500/20 text-amber-400' 
+                            : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {user.isAdmin ? '👑 管理员' : '👤 用户'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleToggleAdmin(user)}
+                            className="px-3 py-1 text-sm rounded-lg transition-colors duration-200 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+                          >
+                            {user.isAdmin ? '取消管理员' : '设为管理员'}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user)}
+                            className="px-3 py-1 text-sm rounded-lg transition-colors duration-200 bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                          >
+                            删除
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

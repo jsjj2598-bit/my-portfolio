@@ -1,4 +1,25 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { createClient } from '@vercel/kv';
+
+interface User {
+  id: string;
+  githubId: number;
+  login: string;
+  name: string;
+  avatarUrl: string;
+  email?: string;
+  bio?: string;
+  website?: string;
+  location?: string;
+  createdAt: string;
+  lastLoginAt: string;
+  isAdmin: boolean;
+}
+
+const kv = createClient({
+  url: process.env.KV_REST_API_URL || '',
+  token: process.env.KV_REST_API_TOKEN || '',
+});
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -56,6 +77,46 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const userData = await userResponse.json();
     console.log('GitHub OAuth: User info received');
+
+    console.log('GitHub OAuth: Saving user to database');
+    const users = await kv.get<User[]>('users') || [];
+    const userId = `github_${userData.id}`;
+    const existingUserIndex = users.findIndex(u => u.id === userId);
+    
+    const now = new Date().toISOString();
+    
+    if (existingUserIndex >= 0) {
+      users[existingUserIndex] = {
+        ...users[existingUserIndex],
+        login: userData.login,
+        name: userData.name || userData.login,
+        avatarUrl: userData.avatar_url,
+        email: userData.email,
+        bio: userData.bio,
+        website: userData.blog,
+        location: userData.location,
+        lastLoginAt: now,
+      };
+    } else {
+      const newUser: User = {
+        id: userId,
+        githubId: userData.id,
+        login: userData.login,
+        name: userData.name || userData.login,
+        avatarUrl: userData.avatar_url,
+        email: userData.email,
+        bio: userData.bio,
+        website: userData.blog,
+        location: userData.location,
+        createdAt: now,
+        lastLoginAt: now,
+        isAdmin: false,
+      };
+      users.push(newUser);
+    }
+
+    await kv.set('users', users);
+    console.log('GitHub OAuth: User saved successfully');
 
     res.status(200).json({
       access_token: tokenData.access_token,
