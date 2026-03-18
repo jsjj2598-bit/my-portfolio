@@ -8,6 +8,7 @@ import Hobbies from './components/Hobbies';
 import WorksUpload from './components/WorksUpload';
 import AllWorks from './components/AllWorks';
 import Footer from './components/Footer';
+import Guestbook from './components/Guestbook';
 import { api } from './services/api';
 
 interface MediaItem {
@@ -120,6 +121,7 @@ const App: React.FC = () => {
           <Video />
           <Photography />
           <Hobbies />
+          <Guestbook />
           <WorksUpload onUpload={addMediaItem} mediaCount={mediaItems.length} mediaItems={mediaItems} onExport={exportMediaItems} onImport={importMediaItems} />
         </main>
         <Footer />
