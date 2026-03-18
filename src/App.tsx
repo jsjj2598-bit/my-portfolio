@@ -8,6 +8,7 @@ import Hobbies from './components/Hobbies';
 import WorksUpload from './components/WorksUpload';
 import AllWorks from './components/AllWorks';
 import Footer from './components/Footer';
+import { api } from './services/api';
 
 interface MediaItem {
   id: number;
@@ -16,18 +17,20 @@ interface MediaItem {
   url: string;
   category: string;
   description?: string;
+  createdAt: string;
 }
 
 const App: React.FC = () => {
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>(() => {
-    const saved = localStorage.getItem('mediaItems');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [showAllWorks, setShowAllWorks] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('mediaItems', JSON.stringify(mediaItems));
-  }, [mediaItems]);
+    const loadItems = async () => {
+      const items = await api.getMediaItems();
+      setMediaItems(items);
+    };
+    loadItems();
+  }, []);
 
   useEffect(() => {
     const revealElements = document.querySelectorAll('.reveal');
@@ -54,11 +57,13 @@ const App: React.FC = () => {
     return () => window.removeEventListener('scroll', revealOnScroll);
   }, [mediaItems, showAllWorks]);
 
-  const addMediaItem = (item: MediaItem) => {
+  const addMediaItem = async (item: MediaItem) => {
+    await api.addMediaItem(item);
     setMediaItems([...mediaItems, item]);
   };
 
-  const deleteMediaItem = (id: number) => {
+  const deleteMediaItem = async (id: number) => {
+    await api.deleteMediaItem(id);
     setMediaItems(mediaItems.filter(item => item.id !== id));
   };
 
@@ -73,7 +78,10 @@ const App: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const importMediaItems = (items: MediaItem[]) => {
+  const importMediaItems = async (items: MediaItem[]) => {
+    for (const item of items) {
+      await api.addMediaItem(item);
+    }
     setMediaItems(prev => [...prev, ...items]);
   };
 

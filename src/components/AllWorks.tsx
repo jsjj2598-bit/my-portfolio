@@ -7,6 +7,7 @@ interface MediaItem {
   url: string;
   category: string;
   description?: string;
+  createdAt: string;
 }
 
 interface AllWorksProps {

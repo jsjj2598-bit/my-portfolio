@@ -7,6 +7,7 @@ interface MediaItem {
   url: string;
   category: string;
   description?: string;
+  createdAt: string;
 }
 
 interface WorksUploadProps {
@@ -64,7 +65,8 @@ const WorksUpload: React.FC<WorksUploadProps> = ({ onUpload, mediaCount, mediaIt
               type: uploadType,
               url: data.secure_url,
               category: uploadCategory,
-              description: uploadDescription
+              description: uploadDescription,
+              createdAt: new Date().toISOString()
             };
             onUpload(newItem);
             setUploadTitle('');

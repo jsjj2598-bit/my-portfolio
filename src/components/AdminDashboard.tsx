@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { api } from '../services/api';
 
 interface MediaItem {
   id: number;
@@ -63,11 +64,9 @@ const AdminDashboard: React.FC = () => {
     };
   }, [isLocked, lockoutTime]);
 
-  const loadMediaItems = useCallback(() => {
-    const saved = localStorage.getItem('mediaItems');
-    if (saved) {
-      setMediaItems(JSON.parse(saved));
-    }
+  const loadMediaItems = useCallback(async () => {
+    const items = await api.getMediaItems();
+    setMediaItems(items);
   }, []);
 
   const handleLogin = useCallback((e: React.FormEvent) => {
@@ -101,7 +100,7 @@ const AdminDashboard: React.FC = () => {
     }
   }, [password, isLocked, remainingTime, loginAttempts, ADMIN_PASSWORD, loadMediaItems]);
 
-  const handleAddItem = (e: React.FormEvent) => {
+  const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
     const item: MediaItem = {
       ...newItem,
@@ -111,38 +110,40 @@ const AdminDashboard: React.FC = () => {
       createdAt: new Date().toISOString()
     } as MediaItem;
 
+    await api.addMediaItem(item);
     const updated = [...mediaItems, item];
     setMediaItems(updated);
-    localStorage.setItem('mediaItems', JSON.stringify(updated));
     setShowAddModal(false);
     setNewItem({ type: 'image', category: '摄影' });
   };
 
-  const handleEditItem = (e: React.FormEvent) => {
+  const handleEditItem = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingItem) return;
 
+    await api.updateMediaItem(editingItem);
     const updated = mediaItems.map(item => 
       item.id === editingItem.id ? editingItem : item
     );
     setMediaItems(updated);
-    localStorage.setItem('mediaItems', JSON.stringify(updated));
     setShowEditModal(false);
     setEditingItem(null);
   };
 
-  const handleDeleteItem = (id: number) => {
+  const handleDeleteItem = async (id: number) => {
     if (confirm('确定要删除这个作品吗？')) {
+      await api.deleteMediaItem(id);
       const updated = mediaItems.filter(item => item.id !== id);
       setMediaItems(updated);
-      localStorage.setItem('mediaItems', JSON.stringify(updated));
     }
   };
 
-  const handleDeleteAll = () => {
+  const handleDeleteAll = async () => {
     if (confirm('确定要删除所有作品吗？此操作不可恢复！')) {
+      for (const item of mediaItems) {
+        await api.deleteMediaItem(item.id);
+      }
       setMediaItems([]);
-      localStorage.setItem('mediaItems', JSON.stringify([]));
     }
   };
 
@@ -157,12 +158,14 @@ const AdminDashboard: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     try {
       const data = JSON.parse(importData);
       if (Array.isArray(data)) {
+        for (const item of data) {
+          await api.addMediaItem(item);
+        }
         setMediaItems(prev => [...prev, ...data]);
-        localStorage.setItem('mediaItems', JSON.stringify([...mediaItems, ...data]));
         setShowImportModal(false);
         setImportData('');
         alert('导入成功！');
