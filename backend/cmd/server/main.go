@@ -24,7 +24,10 @@ func main() {
 
 	// 配置 CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://yourdomain.com"},
+		AllowOrigins:     []string{"http://localhost:5173", "https://yourdomain.com"， "https://longpersonal.cn",
+  "https://www.longpersonal.cn",
+  "https://my-portfolio-eele.vercel.app",
+  "https://www.my-portfolio-eele.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
