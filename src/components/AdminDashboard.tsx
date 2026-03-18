@@ -11,10 +11,25 @@ interface MediaItem {
   createdAt: string;
 }
 
+interface ActivityLog {
+  id: number;
+  type: 'visit' | 'login' | 'comment' | 'like';
+  userId?: string;
+  userName?: string;
+  userAvatar?: string;
+  targetId?: string;
+  targetType?: string;
+  details?: string;
+  ip?: string;
+  userAgent?: string;
+  createdAt: string;
+}
+
 const getCurrentTime = () => Date.now();
 
 const AdminDashboard: React.FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -69,6 +84,11 @@ const AdminDashboard: React.FC = () => {
     setMediaItems(items);
   }, []);
 
+  const loadActivityLogs = useCallback(async () => {
+    const logs = await api.getLogs('');
+    setActivityLogs(logs);
+  }, []);
+
   const handleLogin = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     
@@ -81,6 +101,7 @@ const AdminDashboard: React.FC = () => {
       setIsAuthenticated(true);
       setLoginAttempts(0);
       loadMediaItems();
+      loadActivityLogs();
     } else {
       const newAttempts = loginAttempts + 1;
       setLoginAttempts(newAttempts);
@@ -302,6 +323,103 @@ const AdminDashboard: React.FC = () => {
               </div>
               <div className="text-gray-400">分类数</div>
             </div>
+          </div>
+        </div>
+
+        <div className="glass-effect rounded-3xl p-6 mb-8">
+          <h2 className="text-2xl font-bold text-white mb-4">
+            📈 用户活动统计
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-4 glass-effect rounded-2xl">
+              <div className="text-3xl font-bold text-green-400">
+                {activityLogs.filter(l => l.type === 'visit').length}
+              </div>
+              <div className="text-gray-400">访问次数</div>
+            </div>
+            <div className="text-center p-4 glass-effect rounded-2xl">
+              <div className="text-3xl font-bold text-blue-400">
+                {activityLogs.filter(l => l.type === 'login').length}
+              </div>
+              <div className="text-gray-400">登录次数</div>
+            </div>
+            <div className="text-center p-4 glass-effect rounded-2xl">
+              <div className="text-3xl font-bold text-purple-400">
+                {activityLogs.filter(l => l.type === 'comment').length}
+              </div>
+              <div className="text-gray-400">评论数</div>
+            </div>
+            <div className="text-center p-4 glass-effect rounded-2xl">
+              <div className="text-3xl font-bold text-pink-400">
+                {activityLogs.filter(l => l.type === 'like').length}
+              </div>
+              <div className="text-gray-400">点赞数</div>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <h3 className="text-lg font-bold text-white mb-4">活动日志</h3>
+            {activityLogs.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">
+                暂无活动记录
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">时间</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">类型</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">用户</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">详情</th>
+                    <th className="text-left py-3 px-4 text-gray-400 font-medium">IP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {activityLogs.slice(0, 50).map((log) => (
+                    <tr key={log.id} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="py-3 px-4 text-gray-300 text-sm">
+                        {new Date(log.createdAt).toLocaleString('zh-CN')}
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          log.type === 'visit' ? 'bg-green-500/20 text-green-400' :
+                          log.type === 'login' ? 'bg-blue-500/20 text-blue-400' :
+                          log.type === 'comment' ? 'bg-purple-500/20 text-purple-400' :
+                          'bg-pink-500/20 text-pink-400'
+                        }`}>
+                          {log.type === 'visit' ? '👁️ 访问' :
+                           log.type === 'login' ? '🔐 登录' :
+                           log.type === 'comment' ? '💬 评论' :
+                           '❤️ 点赞'}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-white">
+                        {log.userName ? (
+                          <div className="flex items-center gap-2">
+                            {log.userAvatar && (
+                              <img
+                                src={log.userAvatar}
+                                alt={log.userName}
+                                className="w-6 h-6 rounded-full"
+                              />
+                            )}
+                            <span>{log.userName}</span>
+                          </div>
+                        ) : (
+                          <span className="text-gray-500">访客</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-gray-400 text-sm max-w-xs truncate">
+                        {log.details || (log.targetType ? `${log.targetType} - ${log.targetId}` : '-')}
+                      </td>
+                      <td className="py-3 px-4 text-gray-500 text-sm font-mono">
+                        {log.ip || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
 
