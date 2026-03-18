@@ -86,6 +86,13 @@ func AdminAuth() gin.HandlerFunc {
 
 		// 从 token 中获取用户信息
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
+			// 先检查token中的isAdmin声明
+			if isAdmin, ok := claims["isAdmin"].(bool); !ok || !isAdmin {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Admin access required"})
+				c.Abort()
+				return
+			}
+			
 			// 从数据库中获取用户信息并检查是否是管理员
 			userID, ok := claims["userID"].(string)
 			if !ok {

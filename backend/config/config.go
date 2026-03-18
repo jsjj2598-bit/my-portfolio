@@ -27,12 +27,16 @@ func Load() {
 		ServerPort: getEnv("SERVER_PORT", "8080"),
 		DatabaseURL: getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/portfolio?sslmode=disable"),
 		JWTSecret: getEnv("JWT_SECRET", ""),
-		AdminPassword: getEnv("ADMIN_PASSWORD", "admin123"),
+		AdminPassword: getEnv("ADMIN_PASSWORD", ""),
 	}
 	
-	// 验证JWT密钥是否设置
+	// 验证必要的环境变量
 	if AppConfig.JWTSecret == "" {
 		log.Fatal("Error: JWT_SECRET environment variable is required")
+	}
+	
+	if AppConfig.AdminPassword == "" {
+		log.Fatal("Error: ADMIN_PASSWORD environment variable is required")
 	}
 }
 

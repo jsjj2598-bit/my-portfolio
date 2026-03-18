@@ -86,7 +86,9 @@ func (s *UserService) Login(email, password string) (*models.User, error) {
 	// 更新最后登录时间
 	now := time.Now()
 	user.LastLoginAt = &now
-	storage.GetDB().Save(&user)
+	if err := storage.GetDB().Save(&user).Error; err != nil {
+		return nil, err
+	}
 
 	return &user, nil
 }
