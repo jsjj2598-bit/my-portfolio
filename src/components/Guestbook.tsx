@@ -20,7 +20,7 @@ interface GitHubUser {
 }
 
 const GITHUB_CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID || '';
-const GITHUB_REDIRECT_URI = window.location.origin;
+const GITHUB_REDIRECT_URI = import.meta.env.VITE_GITHUB_REDIRECT_URI || window.location.origin;
 
 const Guestbook: React.FC = () => {
   const [comments, setComments] = useState<CommentItem[]>([]);

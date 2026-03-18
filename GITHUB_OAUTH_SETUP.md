@@ -1,14 +1,18 @@
 # GitHub OAuth 配置指南
 
+## ⚠️ 重要：回调 URL 必须完全匹配！
+
 ## 步骤 1：创建 GitHub OAuth 应用
 
 1. 访问 [GitHub 开发者设置](https://github.com/settings/developers)
 2. 点击 "OAuth Apps" → "New OAuth App"
-3. 填写以下信息：
-   - **Application name**: 你的网站名称（例如：My Portfolio）
-   - **Homepage URL**: 你的网站 URL（例如：`https://my-portfolio-jade-delta-jzu90f5wpd.vercel.app/`）
-   - **Application description**: 可选，描述你的应用
-   - **Authorization callback URL**: 你的网站 URL（例如：`https://my-portfolio-jade-delta-jzu90f5wpd.vercel.app/`）
+3. **精确填写以下信息**：
+   - **Application name**: `My Portfolio`
+   - **Homepage URL**: `https://my-portfolio-jade-delta-jzu90f5wpd.vercel.app/`
+   - **Application description**: 我的个人作品集
+   - **Authorization callback URL**: `https://my-portfolio-jade-delta-jzu90f5wpd.vercel.app/`
+
+   ⚠️ **注意**：回调 URL 必须完全一致，包括最后的斜杠 `/`
 
 4. 点击 "Register application"
 
@@ -27,6 +31,7 @@
 ```env
 VITE_GITHUB_CLIENT_ID=你的ClientID
 VITE_GITHUB_CLIENT_SECRET=你的ClientSecret
+VITE_GITHUB_REDIRECT_URI=https://my-portfolio-jade-delta-jzu90f5wpd.vercel.app/
 ```
 
 ### Vercel 生产环境
@@ -34,12 +39,15 @@ VITE_GITHUB_CLIENT_SECRET=你的ClientSecret
 1. 访问 [Vercel 项目设置](https://vercel.com/dashboard)
 2. 选择你的项目
 3. 进入 "Settings" → "Environment Variables"
-4. 添加以下环境变量：
+4. **添加以下3个环境变量**：
 
    | 变量名 | 值 |
    |--------|-----|
    | `VITE_GITHUB_CLIENT_ID` | 你的 Client ID |
    | `VITE_GITHUB_CLIENT_SECRET` | 你的 Client Secret |
+   | `VITE_GITHUB_REDIRECT_URI` | `https://my-portfolio-jade-delta-jzu90f5wpd.vercel.app/` |
+
+   ⚠️ **重要**：所有值都必须与 GitHub OAuth 应用中配置的完全一致！
 
 5. 点击 "Save" 保存
 
