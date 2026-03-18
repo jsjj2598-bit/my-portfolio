@@ -60,6 +60,26 @@ const Hobbies: React.FC = () => {
   const gameList: HobbyItem[] = [
     {
       id: 5,
+      title: '王者荣耀',
+      description: '5v5公平竞技MOBA，团队配合与策略的巅峰对决。',
+      emoji: '⚔️',
+      color: 'from-orange-600 to-red-600',
+      category: 'game',
+      tags: ['MOBA', '竞技', '团队'],
+      rating: 5
+    },
+    {
+      id: 6,
+      title: '金铲铲之战',
+      description: '自走棋策略游戏，阵容搭配与运气的完美结合。',
+      emoji: '🎲',
+      color: 'from-yellow-600 to-amber-600',
+      category: 'game',
+      tags: ['自走棋', '策略', '休闲'],
+      rating: 5
+    },
+    {
+      id: 7,
       title: '原神',
       description: '开放世界冒险，提瓦特大陆的奇幻之旅。',
       emoji: '⚡',
@@ -69,33 +89,53 @@ const Hobbies: React.FC = () => {
       rating: 5
     },
     {
-      id: 6,
-      title: '塞尔达传说',
-      description: '任天堂的经典之作，探索与解谜的极致体验。',
+      id: 8,
+      title: '永劫无间',
+      description: '武侠动作竞技，飞索穿梭与剑气纵横的热血战斗。',
       emoji: '🗡️',
+      color: 'from-red-600 to-orange-600',
+      category: 'game',
+      tags: ['动作', '竞技', '武侠'],
+      rating: 5
+    },
+    {
+      id: 9,
+      title: '三角洲行动',
+      description: '战术射击游戏，团队协作与精准射击的完美结合。',
+      emoji: '🎯',
       color: 'from-green-600 to-emerald-600',
       category: 'game',
-      tags: ['开放世界', '冒险', '解谜'],
+      tags: ['FPS', '战术', '射击'],
       rating: 5
     },
     {
-      id: 7,
-      title: '明日方舟',
-      description: '策略塔防与深度剧情的完美结合。',
-      emoji: '🎯',
-      color: 'from-slate-600 to-gray-600',
-      category: 'game',
-      tags: ['塔防', '策略', '剧情'],
-      rating: 5
-    },
-    {
-      id: 8,
-      title: '蔚蓝档案',
-      description: '可爱的角色与温馨的校园故事。',
-      emoji: '📚',
+      id: 10,
+      title: '光遇',
+      description: '社交冒险游戏，在云端王国探索与温暖相遇。',
+      emoji: '✨',
       color: 'from-sky-600 to-indigo-600',
       category: 'game',
-      tags: ['养成', 'RPG', '日常'],
+      tags: ['社交', '冒险', '治愈'],
+      rating: 5
+    },
+    {
+      id: 11,
+      title: '鸣潮',
+      description: '开放世界动作游戏，声骸力量与都市幻想的完美融合。',
+      emoji: '🌊',
+      color: 'from-violet-600 to-purple-600',
+      category: 'game',
+      tags: ['开放世界', '动作', 'RPG'],
+      rating: 5
+    },
+    {
+      id: 12,
+      title: '崩坏星穹铁道',
+      description: '银河冒险回合制RPG，星穹列车的星际之旅。',
+      emoji: '🚀',
+      color: 'from-pink-600 to-fuchsia-600',
+      category: 'game',
+      tags: ['回合制', 'RPG', '科幻'],
       rating: 5
     },
   ];
@@ -107,16 +147,20 @@ const Hobbies: React.FC = () => {
   };
 
   return (
-    <section id="hobbies" className="py-24 lg:py-32 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-pink-900/5 to-transparent"></div>
+    <section id="hobbies" className="py-24 lg:py-32 relative overflow-hidden">
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-r from-pink-600/20 via-fuchsia-600/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-cyan-600/20 via-blue-600/20 to-indigo-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-r from-orange-600/15 via-amber-600/15 to-yellow-600/15 rounded-full blur-3xl"></div>
+      </div>
       
-      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 relative z-10">
         <div className="text-center mb-16 reveal">
-          <span className="text-pink-400 text-sm font-medium tracking-widest uppercase">兴趣爱好</span>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-fuchsia-400 to-purple-400 text-sm font-medium tracking-widest uppercase">兴趣爱好</span>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-4 mb-6">
-            二次元 <span className="gradient-text">与游戏世界</span>
+            二次元 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 animate-pulse">与游戏世界</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
             在动漫与游戏中寻找灵感，让想象力自由飞翔
           </p>
         </div>
