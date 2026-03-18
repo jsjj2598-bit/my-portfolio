@@ -35,6 +35,7 @@ const Guestbook: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const loadComments = useCallback(async () => {
     const { comments } = await api.getComments();
@@ -74,8 +75,12 @@ const Guestbook: React.FC = () => {
   };
 
   const handleGitHubCallback = async (code: string) => {
+    setLoading(true);
+    console.log('Starting GitHub callback with code:', code);
     try {
+      console.log('Calling backend API...');
       const data = await api.githubOAuthCallback(code);
+      console.log('Backend response:', data);
       if (data.access_token && data.user) {
         setAccessToken(data.access_token);
         setUser(data.user);
@@ -83,9 +88,20 @@ const Guestbook: React.FC = () => {
         localStorage.setItem('github_user', JSON.stringify(data.user));
         
         window.history.replaceState({}, document.title, window.location.pathname);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      } else {
+        console.error('Invalid response from backend:', data);
+        setShowError(true);
+        setTimeout(() => setShowError(false), 5000);
       }
     } catch (error) {
       console.error('GitHub login error:', error);
+      setShowError(true);
+      setTimeout(() => setShowError(false), 5000);
+      alert('登录失败，请检查控制台获取详细信息');
+    } finally {
+      setLoading(false);
     }
   };
 
