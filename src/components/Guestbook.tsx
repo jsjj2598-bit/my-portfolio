@@ -34,8 +34,8 @@ const Guestbook: React.FC = () => {
   const [showError, setShowError] = useState(false);
 
   const loadComments = useCallback(async () => {
-    const items = await api.getComments();
-    setComments(items);
+    const { comments } = await api.getComments();
+    setComments(comments);
   }, []);
 
   useEffect(() => {
@@ -142,19 +142,17 @@ const Guestbook: React.FC = () => {
     e.preventDefault();
     if (!user || !accessToken || !content.trim()) return;
 
-    const newComment: CommentItem = {
-      id: Date.now(),
+    const newCommentData = {
       userId: user.id.toString(),
       userName: user.name || user.login,
       userAvatar: user.avatar_url,
       content: content.trim(),
       mediaUrl: mediaUrl || undefined,
       mediaType: mediaUrl ? mediaType : undefined,
-      createdAt: new Date().toISOString(),
     };
 
     try {
-      await api.addComment(newComment, accessToken);
+      const newComment = await api.addComment(newCommentData, accessToken);
       setComments([newComment, ...comments]);
       setContent('');
       setMediaUrl('');

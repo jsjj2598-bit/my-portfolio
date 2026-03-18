@@ -16,6 +16,32 @@ interface CommentItem {
   content: string;
   mediaUrl?: string;
   mediaType?: 'image' | 'video';
+  targetId?: string;
+  targetType?: string;
+  createdAt: string;
+}
+
+interface LikeItem {
+  id: number;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  targetId: string;
+  targetType: string;
+  createdAt: string;
+}
+
+interface ActivityLog {
+  id: number;
+  type: 'visit' | 'login' | 'comment' | 'like';
+  userId?: string;
+  userName?: string;
+  userAvatar?: string;
+  targetId?: string;
+  targetType?: string;
+  details?: string;
+  ip?: string;
+  userAgent?: string;
   createdAt: string;
 }
 
@@ -69,18 +95,22 @@ export const api = {
     if (!response.ok) throw new Error('Failed to delete');
   },
 
-  async getComments(): Promise<CommentItem[]> {
+  async getComments(targetId?: string, targetType?: string): Promise<{ comments: CommentItem[], likes: LikeItem[] }> {
     try {
-      const response = await fetch(`${API_BASE}/comments`);
+      let url = `${API_BASE}/comments`;
+      if (targetId && targetType) {
+        url += `?targetId=${targetId}&targetType=${targetType}`;
+      }
+      const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch');
       return await response.json();
     } catch (error) {
       console.error('Error fetching comments:', error);
-      return [];
+      return { comments: [], likes: [] };
     }
   },
 
-  async addComment(comment: CommentItem, token: string): Promise<CommentItem> {
+  async addComment(comment: Omit<CommentItem, 'id' | 'createdAt'>, token: string): Promise<CommentItem> {
     const response = await fetch(`${API_BASE}/comments`, {
       method: 'POST',
       headers: {
@@ -103,6 +133,44 @@ export const api = {
       body: JSON.stringify({ id }),
     });
     if (!response.ok) throw new Error('Failed to delete comment');
+  },
+
+  async toggleLike(like: Omit<LikeItem, 'id' | 'createdAt'>, token: string): Promise<{ likes: LikeItem[], liked: boolean }> {
+    const response = await fetch(`${API_BASE}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: 'like', ...like }),
+    });
+    if (!response.ok) throw new Error('Failed to toggle like');
+    return await response.json();
+  },
+
+  async getLogs(token: string): Promise<ActivityLog[]> {
+    try {
+      const response = await fetch(`${API_BASE}/logs`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to fetch logs');
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+      return [];
+    }
+  },
+
+  async addLog(log: Omit<ActivityLog, 'id' | 'createdAt' | 'ip' | 'userAgent'>): Promise<ActivityLog> {
+    const response = await fetch(`${API_BASE}/logs`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(log),
+    });
+    if (!response.ok) throw new Error('Failed to add log');
+    return await response.json();
   },
 
   async getGitHubUser(accessToken: string): Promise<GitHubUser> {
