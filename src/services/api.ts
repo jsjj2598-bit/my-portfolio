@@ -56,7 +56,7 @@ export interface User {
   isAdmin: boolean;
 }
 
-const API_BASE = '/api';
+const API_BASE = 'http://localhost:8080/api';
 
 export const api = {
   async getMediaItems(): Promise<MediaItem[]> {
@@ -71,32 +71,45 @@ export const api = {
   },
 
   async addMediaItem(item: MediaItem): Promise<MediaItem> {
-    const response = await fetch(`${API_BASE}/media`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item),
-    });
-    if (!response.ok) throw new Error('Failed to add');
-    return await response.json();
+    try {
+      const response = await fetch(`${API_BASE}/media`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      });
+      if (!response.ok) throw new Error('Failed to add');
+      return await response.json();
+    } catch (error) {
+      console.error('Error adding media item:', error);
+      throw error;
+    }
   },
 
   async updateMediaItem(item: MediaItem): Promise<MediaItem> {
-    const response = await fetch(`${API_BASE}/media`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(item),
-    });
-    if (!response.ok) throw new Error('Failed to update');
-    return await response.json();
+    try {
+      const response = await fetch(`${API_BASE}/media`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item),
+      });
+      if (!response.ok) throw new Error('Failed to update');
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating media item:', error);
+      throw error;
+    }
   },
 
   async deleteMediaItem(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE}/media`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    });
-    if (!response.ok) throw new Error('Failed to delete');
+    try {
+      const response = await fetch(`${API_BASE}/media?id=${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete');
+    } catch (error) {
+      console.error('Error deleting media item:', error);
+      throw error;
+    }
   },
 
   async getComments(targetId?: string, targetType?: string): Promise<{ comments: CommentItem[], likes: LikeItem[] }> {
@@ -115,41 +128,54 @@ export const api = {
   },
 
   async addComment(comment: Omit<CommentItem, 'id' | 'createdAt'>, token: string): Promise<CommentItem> {
-    const response = await fetch(`${API_BASE}/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(comment),
-    });
-    if (!response.ok) throw new Error('Failed to add comment');
-    return await response.json();
+    try {
+      const response = await fetch(`${API_BASE}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(comment),
+      });
+      if (!response.ok) throw new Error('Failed to add comment');
+      return await response.json();
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      throw error;
+    }
   },
 
   async deleteComment(id: number, token: string): Promise<void> {
-    const response = await fetch(`${API_BASE}/comments`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ id }),
-    });
-    if (!response.ok) throw new Error('Failed to delete comment');
+    try {
+      const response = await fetch(`${API_BASE}/comments?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to delete comment');
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      throw error;
+    }
   },
 
   async toggleLike(like: Omit<LikeItem, 'id' | 'createdAt'>, token: string): Promise<{ likes: LikeItem[], liked: boolean }> {
-    const response = await fetch(`${API_BASE}/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ action: 'like', ...like }),
-    });
-    if (!response.ok) throw new Error('Failed to toggle like');
-    return await response.json();
+    try {
+      const response = await fetch(`${API_BASE}/comments/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(like),
+      });
+      if (!response.ok) throw new Error('Failed to toggle like');
+      return await response.json();
+    } catch (error) {
+      console.error('Error toggling like:', error);
+      throw error;
+    }
   },
 
   async getLogs(token: string): Promise<ActivityLog[]> {
@@ -168,72 +194,102 @@ export const api = {
   },
 
   async addLog(log: Omit<ActivityLog, 'id' | 'createdAt' | 'ip' | 'userAgent'>): Promise<ActivityLog> {
-    const response = await fetch(`${API_BASE}/logs`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(log),
-    });
-    if (!response.ok) throw new Error('Failed to add log');
-    return await response.json();
+    try {
+      const response = await fetch(`${API_BASE}/logs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(log),
+      });
+      if (!response.ok) throw new Error('Failed to add log');
+      return await response.json();
+    } catch (error) {
+      console.error('Error adding log:', error);
+      throw error;
+    }
   },
 
-  async register(email: string, password: string, name: string): Promise<{ user: User }> {
-    const response = await fetch(`${API_BASE}/auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'register', email, password, name }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || '注册失败');
+  async register(email: string, password: string, name: string): Promise<{ token: string; user: User }> {
+    try {
+      const response = await fetch(`${API_BASE}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, name }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '注册失败');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error registering user:', error);
+      throw error;
     }
-    return await response.json();
   },
 
-  async login(email: string, password: string): Promise<{ user: User }> {
-    const response = await fetch(`${API_BASE}/auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'login', email, password }),
-    });
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || '登录失败');
+  async login(email: string, password: string): Promise<{ token: string; user: User }> {
+    try {
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '登录失败');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error;
     }
-    return await response.json();
   },
 
   async getUsers(token: string): Promise<User[]> {
-    const response = await fetch(`${API_BASE}/users`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) throw new Error('Failed to get users');
-    return await response.json();
+    try {
+      const response = await fetch(`${API_BASE}/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to get users');
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting users:', error);
+      throw error;
+    }
   },
 
   async updateUserAdmin(id: string, isAdmin: boolean, token: string): Promise<void> {
-    const response = await fetch(`${API_BASE}/users`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ id, isAdmin }),
-    });
-    if (!response.ok) throw new Error('Failed to update user');
+    try {
+      const response = await fetch(`${API_BASE}/users`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id, isAdmin }),
+      });
+      if (!response.ok) throw new Error('Failed to update user');
+    } catch (error) {
+      console.error('Error updating user admin status:', error);
+      throw error;
+    }
   },
 
   async deleteUser(id: string, token: string): Promise<void> {
-    const response = await fetch(`${API_BASE}/users`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({ id }),
-    });
-    if (!response.ok) throw new Error('Failed to delete user');
+    try {
+      const response = await fetch(`${API_BASE}/users`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (!response.ok) throw new Error('Failed to delete user');
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      throw error;
+    }
   },
 };

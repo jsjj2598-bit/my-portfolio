@@ -44,13 +44,20 @@ const App: React.FC = () => {
     loadItems();
     
     api.addLog({ type: 'visit' }).catch(() => {});
+  }, []);
+  
+  useEffect(() => {
+    const initUser = () => {
+      const savedToken = localStorage.getItem('user_token');
+      const savedUser = localStorage.getItem('user_info');
+      if (savedToken && savedUser) {
+        setUserToken(savedToken);
+        setCurrentUser(JSON.parse(savedUser));
+      }
+    };
     
-    const savedToken = localStorage.getItem('user_token');
-    const savedUser = localStorage.getItem('user_info');
-    if (savedToken && savedUser) {
-      setUserToken(savedToken);
-      setCurrentUser(JSON.parse(savedUser));
-    }
+    // 在下一个事件循环中执行，避免同步调用 setState
+    setTimeout(initUser, 0);
   }, []);
 
   useEffect(() => {

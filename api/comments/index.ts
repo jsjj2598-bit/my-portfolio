@@ -69,7 +69,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return;
       }
 
-      const { action, ...data } = req.body as any;
+      interface RequestBody {
+        action?: string;
+        userId: string;
+        userName: string;
+        userAvatar: string;
+        content?: string;
+        mediaUrl?: string;
+        mediaType?: 'image' | 'video';
+        targetId: string;
+        targetType: string;
+      }
+      
+      const { action, ...data } = req.body as RequestBody;
 
       if (action === 'like') {
         const newLike: LikeItem = {

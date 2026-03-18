@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { api } from '../services/api';
+import { api, type User } from '../services/api';
 
 interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLoginSuccess: (user: any, token: string) => void;
+  onLoginSuccess: (user: User, token: string) => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }) => {
@@ -24,20 +24,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onLoginSuccess }
 
     try {
       if (isLogin) {
-        const { user } = await api.login(email, password);
-        const token = btoa(`${user.id}:${email}`);
+        const { user, token } = await api.login(email, password);
         localStorage.setItem('user_token', token);
         localStorage.setItem('user_info', JSON.stringify(user));
         onLoginSuccess(user, token);
       } else {
-        const { user } = await api.register(email, password, name);
-        const token = btoa(`${user.id}:${email}`);
+        const { user, token } = await api.register(email, password, name);
         localStorage.setItem('user_token', token);
         localStorage.setItem('user_info', JSON.stringify(user));
         onLoginSuccess(user, token);
       }
-    } catch (err: any) {
-      setError(err.message || '操作失败');
+    } catch (err) {
+      setError((err as Error).message || '操作失败');
     } finally {
       setLoading(false);
     }

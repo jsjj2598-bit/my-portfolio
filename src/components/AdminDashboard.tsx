@@ -61,7 +61,7 @@ const AdminDashboard: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
-  const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin123';
+  const [adminToken, setAdminToken] = useState<string | null>(null);
 
   const remainingTime = Math.max(0, 60000 - (getCurrentTime() - lastAttemptTime));
   const isLocked = loginAttempts >= 5 && remainingTime > 0;
@@ -72,30 +72,41 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   const loadActivityLogs = useCallback(async () => {
-    const logs = await api.getLogs(ADMIN_PASSWORD);
+    if (!adminToken) return;
+    const logs = await api.getLogs(adminToken);
     setActivityLogs(logs);
-  }, [ADMIN_PASSWORD]);
+  }, [adminToken]);
 
   const loadUsers = useCallback(async () => {
-    const users = await api.getUsers(ADMIN_PASSWORD);
+    if (!adminToken) return;
+    const users = await api.getUsers(adminToken);
     setUsers(users);
-  }, [ADMIN_PASSWORD]);
+  }, [adminToken]);
 
-  const handleLogin = useCallback(() => {
+  const handleLogin = useCallback(async () => {
     if (isLocked) return;
     
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setLoginAttempts(0);
-      loadMediaItems();
-      loadActivityLogs();
-      loadUsers();
-    } else {
+    try {
+      // 使用固定的管理员邮箱和密码登录
+      const { user, token } = await api.login('admin@example.com', password);
+      if (user.isAdmin) {
+        setIsAuthenticated(true);
+        setAdminToken(token);
+        setLoginAttempts(0);
+        loadMediaItems();
+        loadActivityLogs();
+        loadUsers();
+      } else {
+        setLoginAttempts(prev => prev + 1);
+        setLastAttemptTime(getCurrentTime());
+        alert('非管理员账号');
+      }
+    } catch {
       setLoginAttempts(prev => prev + 1);
       setLastAttemptTime(getCurrentTime());
       alert('密码错误');
     }
-  }, [password, isLocked, remainingTime, loginAttempts, ADMIN_PASSWORD, loadMediaItems, loadActivityLogs, loadUsers]);
+  }, [password, isLocked, loadMediaItems, loadActivityLogs, loadUsers]);
 
   const handleAddItem = async () => {
     if (!newItem.title || !newItem.url) return;
@@ -139,8 +150,9 @@ const AdminDashboard: React.FC = () => {
 
   const handleToggleAdmin = async (user: User) => {
     if (!confirm(`确定要${user.isAdmin ? '取消' : '设置'} ${user.name} 的管理员权限吗？`)) return;
+    if (!adminToken) return;
     try {
-      await api.updateUserAdmin(user.id, !user.isAdmin, ADMIN_PASSWORD);
+      await api.updateUserAdmin(user.id, !user.isAdmin, adminToken);
       const updatedUsers = users.map(u => 
         u.id === user.id ? { ...u, isAdmin: !user.isAdmin } : u
       );
@@ -153,8 +165,9 @@ const AdminDashboard: React.FC = () => {
 
   const handleDeleteUser = async (user: User) => {
     if (!confirm(`确定要删除用户 ${user.name} 吗？此操作不可恢复！`)) return;
+    if (!adminToken) return;
     try {
-      await api.deleteUser(user.id, ADMIN_PASSWORD);
+      await api.deleteUser(user.id, adminToken);
       const updatedUsers = users.filter(u => u.id !== user.id);
       setUsers(updatedUsers);
     } catch (error) {
@@ -261,7 +274,10 @@ const AdminDashboard: React.FC = () => {
             🎯 后台管理系统
           </h1>
           <button
-            onClick={() => setIsAuthenticated(false)}
+            onClick={() => {
+              setIsAuthenticated(false);
+              setAdminToken(null);
+            }}
             className="px-6 py-3 glass-effect rounded-xl text-gray-300 hover:text-white transition-colors"
           >
             退出登录

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { api } from '../services/api';
+import { api, type User } from '../services/api';
 
 interface CommentItem {
   id: number;
@@ -25,14 +25,6 @@ interface LikeItem {
   createdAt: string;
 }
 
-interface GitHubUser {
-  login: string;
-  id: number;
-  avatar_url: string;
-  name: string;
-  email?: string;
-}
-
 interface ItemCommentsProps {
   targetId: string;
   targetType: string;
@@ -41,7 +33,7 @@ interface ItemCommentsProps {
 const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => {
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [likes, setLikes] = useState<LikeItem[]>([]);
-  const [user, setUser] = useState<GitHubUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [content, setContent] = useState('');
   const [showLoginRequired, setShowLoginRequired] = useState(false);
@@ -53,17 +45,27 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
   }, [targetId, targetType]);
 
   useEffect(() => {
-    loadData();
-
-    const savedToken = localStorage.getItem('github_token');
-    const savedUser = localStorage.getItem('github_user');
-    if (savedToken && savedUser) {
-      setAccessToken(savedToken);
-      setUser(JSON.parse(savedUser));
-    }
+    // 在下一个事件循环中执行，避免同步调用 setState
+    setTimeout(() => {
+      loadData();
+    }, 0);
   }, [loadData]);
+  
+  useEffect(() => {
+    const initUser = () => {
+      const savedToken = localStorage.getItem('user_token');
+      const savedUser = localStorage.getItem('user_info');
+      if (savedToken && savedUser) {
+        setAccessToken(savedToken);
+        setUser(JSON.parse(savedUser));
+      }
+    };
+    
+    // 在下一个事件循环中执行，避免同步调用 setState
+    setTimeout(initUser, 0);
+  }, []);
 
-  const isLiked = user ? likes.some(l => l.userId === user.id.toString()) : false;
+  const isLiked = user ? likes.some(l => l.userId === user.id) : false;
   const likeCount = likes.length;
 
   const handleLike = async () => {
@@ -75,9 +77,9 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
 
     try {
       const { likes: newLikes, liked } = await api.toggleLike({
-        userId: user.id.toString(),
-        userName: user.name || user.login,
-        userAvatar: user.avatar_url,
+        userId: user.id,
+        userName: user.name,
+        userAvatar: user.avatar || '',
         targetId,
         targetType,
       }, accessToken);
@@ -87,9 +89,9 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
       if (liked) {
         await api.addLog({
           type: 'like',
-          userId: user.id.toString(),
-          userName: user.name || user.login,
-          userAvatar: user.avatar_url,
+          userId: user.id,
+          userName: user.name,
+          userAvatar: user.avatar || '',
           targetId,
           targetType,
         });
@@ -105,10 +107,10 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
 
     try {
       const newComment = await api.addComment({
-        userId: user.id.toString(),
-        userName: user.name || user.login,
-        userAvatar: user.avatar_url,
-        userEmail: user.email || '',
+        userId: user.id,
+        userName: user.name,
+        userAvatar: user.avatar || '',
+        userEmail: user.email,
         content: content.trim(),
         targetId,
         targetType,
@@ -119,9 +121,9 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
 
       await api.addLog({
         type: 'comment',
-        userId: user.id.toString(),
-        userName: user.name || user.login,
-        userAvatar: user.avatar_url,
+        userId: user.id,
+        userName: user.name,
+        userAvatar: user.avatar || '',
         targetId,
         targetType,
         details: content.trim(),
@@ -147,7 +149,7 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
     <div className="mt-8">
       {showLoginRequired && (
         <div className="glass-effect rounded-xl p-4 mb-4 border border-yellow-500/30 text-yellow-400 text-center">
-          请先登录 GitHub 才能点赞和评论
+          请先登录才能点赞和评论
         </div>
       )}
 
@@ -172,8 +174,8 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
         <form onSubmit={handleSubmitComment} className="glass-effect rounded-2xl p-6 mb-6">
           <div className="flex items-start gap-4">
             <img
-              src={user.avatar_url}
-              alt={user.name || user.login}
+              src={user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=random`}
+              alt={user.name}
               className="w-10 h-10 rounded-full"
             />
             <div className="flex-1">
@@ -220,36 +222,41 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <span className="font-bold text-white">{comment.userName}</span>
-                      <span className="text-gray-400 text-sm ml-2">
-                        {new Date(comment.createdAt).toLocaleString('zh-CN')}
-                      </span>
+                      <h4 className="text-white font-bold">{comment.userName}</h4>
+                      {comment.userEmail && (
+                        <p className="text-gray-400 text-xs">{comment.userEmail}</p>
+                      )}
                     </div>
-                    {user && user.id.toString() === comment.userId && (
-                      <button
-                        onClick={() => handleDeleteComment(comment.id)}
-                        className="text-gray-400 hover:text-red-400 transition-colors"
-                      >
-                        🗑️
-                      </button>
-                    )}
+                    <span className="text-gray-500 text-xs">
+                      {new Date(comment.createdAt).toLocaleString('zh-CN')}
+                    </span>
                   </div>
-                  <p className="text-gray-300 whitespace-pre-wrap">{comment.content}</p>
+                  <p className="text-gray-300 mb-3">{comment.content}</p>
                   {comment.mediaUrl && (
-                    <div className="mt-4 aspect-video bg-dark-800 rounded-xl overflow-hidden">
+                    <div className="mt-3">
                       {comment.mediaType === 'image' ? (
                         <img
                           src={comment.mediaUrl}
-                          alt="Comment media"
-                          className="w-full h-full object-cover"
+                          alt="Attachment"
+                          className="max-h-48 rounded-lg"
                         />
                       ) : (
                         <video
                           src={comment.mediaUrl}
-                          className="w-full h-full object-cover"
                           controls
+                          className="max-h-48 rounded-lg"
                         />
                       )}
+                    </div>
+                  )}
+                  {user && user.id === comment.userId && (
+                    <div className="mt-3 flex justify-end">
+                      <button
+                        onClick={() => handleDeleteComment(comment.id)}
+                        className="text-red-400 hover:text-red-300 text-sm"
+                      >
+                        删除
+                      </button>
                     </div>
                   )}
                 </div>
