@@ -23,6 +23,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return;
     }
 
+    console.log('GitHub OAuth: Starting token exchange');
     const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
       method: 'POST',
       headers: {
@@ -38,12 +39,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const tokenData = await tokenResponse.json();
+    console.log('GitHub OAuth: Token response received');
     
     if (tokenData.error) {
+      console.error('GitHub OAuth: Token error', tokenData.error);
       res.status(400).json(tokenData);
       return;
     }
 
+    console.log('GitHub OAuth: Fetching user info');
     const userResponse = await fetch('https://api.github.com/user', {
       headers: {
         'Authorization': `Bearer ${tokenData.access_token}`,
@@ -51,6 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     const userData = await userResponse.json();
+    console.log('GitHub OAuth: User info received');
 
     res.status(200).json({
       access_token: tokenData.access_token,

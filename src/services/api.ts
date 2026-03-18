@@ -184,7 +184,7 @@ export const api = {
   },
 
   async githubOAuthCallback(code: string): Promise<{ access_token: string; user: GitHubUser }> {
-    const response = await fetch(`${API_BASE}/auth/github`, {
+    const response = await fetch(`${API_BASE}/auth/github/callback`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
