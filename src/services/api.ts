@@ -182,4 +182,16 @@ export const api = {
     if (!response.ok) throw new Error('Failed to get user');
     return await response.json();
   },
+
+  async githubOAuthCallback(code: string): Promise<{ access_token: string; user: GitHubUser }> {
+    const response = await fetch(`${API_BASE}/auth/github`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ code }),
+    });
+    if (!response.ok) throw new Error('GitHub OAuth failed');
+    return await response.json();
+  },
 };

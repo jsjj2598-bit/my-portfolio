@@ -75,27 +75,12 @@ const Guestbook: React.FC = () => {
 
   const handleGitHubCallback = async (code: string) => {
     try {
-      const response = await fetch('https://github.com/login/oauth/access_token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          client_id: GITHUB_CLIENT_ID,
-          client_secret: import.meta.env.VITE_GITHUB_CLIENT_SECRET || '',
-          code,
-          redirect_uri: GITHUB_REDIRECT_URI,
-        }),
-      });
-
-      const data = await response.json();
-      if (data.access_token) {
-        const githubUser = await api.getGitHubUser(data.access_token);
+      const data = await api.githubOAuthCallback(code);
+      if (data.access_token && data.user) {
         setAccessToken(data.access_token);
-        setUser(githubUser);
+        setUser(data.user);
         localStorage.setItem('github_token', data.access_token);
-        localStorage.setItem('github_user', JSON.stringify(githubUser));
+        localStorage.setItem('github_user', JSON.stringify(data.user));
         
         window.history.replaceState({}, document.title, window.location.pathname);
       }
