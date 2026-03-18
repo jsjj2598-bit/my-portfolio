@@ -118,13 +118,6 @@ const App: React.FC = () => {
     }).catch(() => {});
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user_token');
-    localStorage.removeItem('user_info');
-    setCurrentUser(null);
-    setUserToken(null);
-  };
-
   if (showAllWorks) {
     return (
       <div className="min-h-screen bg-dark-900 text-white overflow-x-hidden">
@@ -164,7 +157,6 @@ const App: React.FC = () => {
             currentUser={currentUser}
             userToken={userToken}
             onLoginClick={() => setShowAuthModal(true)}
-            onLogout={handleLogout}
           />
           <WorksUpload onUpload={addMediaItem} mediaCount={mediaItems.length} mediaItems={mediaItems} onExport={exportMediaItems} onImport={importMediaItems} />
         </main>

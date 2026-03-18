@@ -1,18 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { api } from '../services/api';
-import AuthModal from './AuthModal';
-
-interface CommentItem {
-  id: number;
-  userId: string;
-  userName: string;
-  userAvatar: string;
-  userEmail: string;
-  content: string;
-  mediaUrl?: string;
-  mediaType?: 'image' | 'video';
-  createdAt: string;
-}
+import { api, type CommentItem } from '../services/api';
 
 interface User {
   id: string;
@@ -25,10 +12,9 @@ interface GuestbookProps {
   currentUser?: User | null;
   userToken?: string | null;
   onLoginClick: () => void;
-  onLogout: () => void;
 }
 
-const Guestbook: React.FC<GuestbookProps> = ({ currentUser, userToken, onLoginClick, onLogout }) => {
+const Guestbook: React.FC<GuestbookProps> = ({ currentUser, userToken, onLoginClick }) => {
   const [comments, setComments] = useState<CommentItem[]>([]);
   const [content, setContent] = useState('');
   const [mediaType, setMediaType] = useState<'image' | 'video'>('image');

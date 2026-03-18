@@ -6,6 +6,7 @@ interface CommentItem {
   userId: string;
   userName: string;
   userAvatar: string;
+  userEmail?: string;
   content: string;
   mediaUrl?: string;
   mediaType?: 'image' | 'video';
@@ -29,6 +30,7 @@ interface GitHubUser {
   id: number;
   avatar_url: string;
   name: string;
+  email?: string;
 }
 
 interface ItemCommentsProps {
@@ -106,6 +108,7 @@ const ItemComments: React.FC<ItemCommentsProps> = ({ targetId, targetType }) => 
         userId: user.id.toString(),
         userName: user.name || user.login,
         userAvatar: user.avatar_url,
+        userEmail: user.email || '',
         content: content.trim(),
         targetId,
         targetType,

@@ -1,4 +1,4 @@
-interface MediaItem {
+export interface MediaItem {
   id: number;
   title: string;
   type: 'image' | 'video';
@@ -8,11 +8,12 @@ interface MediaItem {
   createdAt: string;
 }
 
-interface CommentItem {
+export interface CommentItem {
   id: number;
   userId: string;
   userName: string;
   userAvatar: string;
+  userEmail: string;
   content: string;
   mediaUrl?: string;
   mediaType?: 'image' | 'video';
@@ -21,7 +22,7 @@ interface CommentItem {
   createdAt: string;
 }
 
-interface LikeItem {
+export interface LikeItem {
   id: number;
   userId: string;
   userName: string;
@@ -31,7 +32,7 @@ interface LikeItem {
   createdAt: string;
 }
 
-interface ActivityLog {
+export interface ActivityLog {
   id: number;
   type: 'visit' | 'login' | 'comment' | 'like';
   userId?: string;
@@ -45,7 +46,7 @@ interface ActivityLog {
   createdAt: string;
 }
 
-interface User {
+export interface User {
   id: string;
   email: string;
   name: string;

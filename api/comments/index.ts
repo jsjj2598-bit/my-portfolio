@@ -6,6 +6,7 @@ interface CommentItem {
   userId: string;
   userName: string;
   userAvatar: string;
+  userEmail: string;
   content: string;
   mediaUrl?: string;
   mediaType?: 'image' | 'video';
