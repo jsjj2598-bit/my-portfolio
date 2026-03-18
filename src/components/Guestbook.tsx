@@ -87,6 +87,13 @@ const Guestbook: React.FC = () => {
         localStorage.setItem('github_token', data.access_token);
         localStorage.setItem('github_user', JSON.stringify(data.user));
         
+        await api.addLog({
+          type: 'login',
+          userId: data.user.id.toString(),
+          userName: data.user.name || data.user.login,
+          userAvatar: data.user.avatar_url,
+        });
+        
         window.history.replaceState({}, document.title, window.location.pathname);
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
@@ -170,6 +177,15 @@ const Guestbook: React.FC = () => {
       setComments([newComment, ...comments]);
       setContent('');
       setMediaUrl('');
+      
+      await api.addLog({
+        type: 'comment',
+        userId: user.id.toString(),
+        userName: user.name || user.login,
+        userAvatar: user.avatar_url,
+        details: content.trim(),
+      });
+      
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {

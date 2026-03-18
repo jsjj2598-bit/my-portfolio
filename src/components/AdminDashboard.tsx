@@ -85,9 +85,9 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   const loadActivityLogs = useCallback(async () => {
-    const logs = await api.getLogs('');
+    const logs = await api.getLogs(ADMIN_PASSWORD);
     setActivityLogs(logs);
-  }, []);
+  }, [ADMIN_PASSWORD]);
 
   const handleLogin = useCallback((e: React.FormEvent) => {
     e.preventDefault();

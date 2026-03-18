@@ -31,6 +31,8 @@ const App: React.FC = () => {
       setMediaItems(items);
     };
     loadItems();
+    
+    api.addLog({ type: 'visit' }).catch(() => {});
   }, []);
 
   useEffect(() => {
