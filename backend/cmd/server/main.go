@@ -22,14 +22,14 @@ func main() {
 	// 创建 Gin 引擎
 	r := gin.Default()
 
-	// 配置 CORS - 暂时允许所有来源
-	r.Use(cors.New(cors.Config{
-		AllowAllOrigins:  true,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
+	// 配置 CORS - 允许所有来源
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Authorization", "Accept"}
+	config.ExposeHeaders = []string{"Content-Length"}
+	config.AllowCredentials = false
+	r.Use(cors.New(config))
 
 	// 创建 API 处理器
 	authHandler := api.NewAuthHandler()
