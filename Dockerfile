@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod tidy && go build -o server ./cmd/server
+RUN go mod tidy && go build -o server ./backend/cmd/server
 
 EXPOSE 8080
 
