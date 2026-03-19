@@ -1,0 +1,10 @@
+github.com/bytedance/sonic v1.9.1 h1:6iJ6NqdoxCDrq27ng5D9IcWJzDPBUZ4p2P1Rd9i85H4= github.com/bytedance/sonic v1.9.1/go.mod h1:i736AoUSYt75HyZLoJW9ERYxcy6eaN6h4BZXU064P/U=
+github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 h1:qSGYFH7+jGhDF8vLC+iwCDNVf96aXPZfDq/1Bp2b07c= github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311/go.mod h1:DH46F32mSOjUmXrMHnKwZdA8wcEefY7UVqBKYGjpdQY=
+github.com/gin-contrib/cors v1.4.0 h1:yXrXiy4ms30j8Pzq2YI9c1f5hV8aT+q36YbQa9P1wU= github.com/gin-contrib/cors v1.4.0/go.mod h1:YH+U45Z5lKwWEGCYI7Kltj2H5bYJieJtuZ5bXlA2bE4=
+github.com/gin-gonic/gin v1.9.1 h1:45UqfEXBjQfIkb56BjWcZ95+ptI60VG98j3L6h+JT78= github.com/gin-gonic/gin v1.9.1/go.mod h1:hPrL7YrpYKXt5YId3A/Tnip5kqbEAP+KLuI3SUcPTeU=
+github.com/golang-jwt/jwt/v5 v5.0.0 h1:7cYmW1XlMY7h7ii7UhUyChSgS5wUJEnm9uZVTGqOWzg= github.com/golang-jwt/jwt/v5 v5.0.0/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
+github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0= github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
+github.com/lib/pq v1.10.9 h1:9PXP2aK54hGEgShykV4T4spvW8iZxx7YNoFgB4hOkuQ= github.com/lib/pq v1.10.9/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
+golang.org/x/crypto v0.14.0 h1:wBqGXzWJW6m1XrIKlAH0Hs1JJ7+9KBwnIO8v66Q9cHc= golang.org/x/crypto v0.14.0/go.mod h1:MVFd36DqK4CsrnJYDkBA3VC4m2GkXAM0PvzMCn4JQf4=
+gorm.io/driver/postgres v1.5.2 h1:mRqJt36+M50393t4m9GJfU4TPLUv+Rf88xHqQ+F0iE= gorm.io/driver/postgres v1.5.2/go.mod h1:5yO55yMBxD7sJg6pIf83YTEbuNnGm2K2Q3LtM6P4w5g=
+gorm.io/gorm v1.25.4 h1:3f3M1F5Aij1tJ7F9Fg5qQdMufW4QTF90yWx76XvKRM= gorm.io/gorm v1.25.4/go.mod h1:fyBvU9YeiA827+ZqLz+WjeqH90pF3632DfKjZ4qf4A=
