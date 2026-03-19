@@ -9,10 +9,12 @@ RUN cd backend && go build -o /app/server cmd/server/main.go
 
 FROM alpine:latest
 
-WORKDIR /app
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /root/
 
 COPY --from=builder /app/server .
 
 EXPOSE 8080
 
-CMD ["./server"]
+ENTRYPOINT ["./server"]
