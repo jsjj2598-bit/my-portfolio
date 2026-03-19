@@ -1,13 +1,14 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/yourusername/portfolio/config"
-	"github.com/yourusername/portfolio/internal/services"
+	"github.com/yourusername/portfolio/backend/config"
+	"github.com/yourusername/portfolio/backend/internal/services"
 )
 
 // JWTAuth JWT 认证中间件

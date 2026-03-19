@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/yourusername/portfolio/internal/models"
-	"github.com/yourusername/portfolio/internal/storage"
+	"github.com/yourusername/portfolio/backend/internal/models"
+	"github.com/yourusername/portfolio/backend/internal/storage"
 )
 
 // CommentService 评论服务

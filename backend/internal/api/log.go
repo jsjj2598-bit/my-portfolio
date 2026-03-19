@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yourusername/portfolio/internal/models"
-	"github.com/yourusername/portfolio/internal/services"
+	"github.com/yourusername/portfolio/backend/internal/models"
+	"github.com/yourusername/portfolio/backend/internal/services"
 )
 
 // LogHandler 活动日志处理器

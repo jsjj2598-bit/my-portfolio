@@ -6,9 +6,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/yourusername/portfolio/config"
-	"github.com/yourusername/portfolio/internal/models"
-	"github.com/yourusername/portfolio/internal/services"
+	"github.com/yourusername/portfolio/backend/config"
+	"github.com/yourusername/portfolio/backend/internal/models"
+	"github.com/yourusername/portfolio/backend/internal/services"
 )
 
 // AuthHandler 认证处理器

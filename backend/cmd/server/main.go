@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/yourusername/portfolio/config"
-	"github.com/yourusername/portfolio/internal/api"
-	"github.com/yourusername/portfolio/internal/middleware"
-	"github.com/yourusername/portfolio/internal/storage"
+	"github.com/yourusername/portfolio/backend/config"
+	"github.com/yourusername/portfolio/backend/internal/api"
+	"github.com/yourusername/portfolio/backend/internal/middleware"
+	"github.com/yourusername/portfolio/backend/internal/storage"
 )
 
 func main() {
@@ -24,10 +24,7 @@ func main() {
 
 	// 配置 CORS
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://yourdomain.com"， "https://longpersonal.cn",
-  "https://www.longpersonal.cn",
-  "https://my-portfolio-eele.vercel.app",
-  "https://www.my-portfolio-eele.vercel.app"},
+		AllowOrigins:     []string{"http://localhost:5173", "https://longperson.cn", "https://www.longperson.cn", "https://my-portfolio-eele.vercel.app", "https://www.my-portfolio-eele.vercel.app"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
