@@ -22,9 +22,9 @@ func main() {
 	// 创建 Gin 引擎
 	r := gin.Default()
 
-	// 配置 CORS
+	// 配置 CORS - 暂时允许所有来源
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://longperson.cn", "https://www.longperson.cn", "https://my-portfolio-eele.vercel.app", "https://www.my-portfolio-eele.vercel.app"},
+		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
