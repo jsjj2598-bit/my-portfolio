@@ -7,10 +7,10 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/yourusername/portfolio/backend/config"
-	"github.com/yourusername/portfolio/backend/internal/api"
-	"github.com/yourusername/portfolio/backend/internal/middleware"
-	"github.com/yourusername/portfolio/backend/internal/storage"
+	"github.com/jsjj2598-bit/my-portfolio-backend/config"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/api"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/middleware"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/storage"
 )
 
 func main() {

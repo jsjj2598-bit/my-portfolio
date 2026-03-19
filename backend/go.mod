@@ -1,4 +1,4 @@
-module github.com/yourusername/portfolio
+module github.com/jsjj2598-bit/my-portfolio-backend
 
 go 1.20
 

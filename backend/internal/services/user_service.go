@@ -7,8 +7,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/yourusername/portfolio/backend/internal/models"
-	"github.com/yourusername/portfolio/backend/internal/storage"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/models"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/storage"
 )
 
 // UserService 用户服务

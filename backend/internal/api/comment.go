@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yourusername/portfolio/backend/internal/models"
-	"github.com/yourusername/portfolio/backend/internal/services"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/models"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/services"
 )
 
 // CommentHandler 评论处理器
@@ -124,7 +124,7 @@ func (h *CommentHandler) ToggleLike(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"likes":  likes,
+		"likes": likes,
 		"liked": liked,
 	})
 }

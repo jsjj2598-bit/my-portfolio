@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/yourusername/portfolio/backend/internal/models"
-	"github.com/yourusername/portfolio/backend/internal/storage"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/models"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/storage"
 )
 
 // MediaService 媒体服务

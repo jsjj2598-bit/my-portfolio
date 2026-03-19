@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yourusername/portfolio/backend/internal/models"
-	"github.com/yourusername/portfolio/backend/internal/services"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/models"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/services"
 )
 
 // MediaHandler 媒体处理器

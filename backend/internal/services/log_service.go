@@ -3,8 +3,8 @@ package services
 import (
 	"time"
 
-	"github.com/yourusername/portfolio/backend/internal/models"
-	"github.com/yourusername/portfolio/backend/internal/storage"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/models"
+	"github.com/jsjj2598-bit/my-portfolio-backend/internal/storage"
 )
 
 // LogService 活动日志服务
